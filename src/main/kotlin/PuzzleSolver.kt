@@ -8,17 +8,9 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
                       val knownNumbers: List<Int>,
                       val isBroken: Boolean = false) {
 
-    init {
-//        println("Puzzle Data $current, $currentRow, $currentCol")
-//        data.printAsMatrix()
-    }
     val isSolved = current.number >= data.size * data.size && !this.isBroken
     fun fillNext():PuzzleData {
         if (isSolved) return this
-        if (current.number < 8) {
-            println(current.number)
-        }
-//        println("fill next")
         var nextRow = currentRow + current.nextItemDirectionRow
         var nextCol = currentCol + current.nextItemDirectionCol
 
@@ -44,14 +36,12 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
             }
 
             if (!isFound) {
-//                println("break it")
                 return Broken
             }
         }
         nextRow = currentRow + current.nextItemDirectionRow
         nextCol = currentCol + current.nextItemDirectionCol
         while(nextRow in data.indices && nextCol in data.indices) {
-//            println("no move $nextRow, $nextCol : ${current.nextItemDirectionRow}, ${current.nextItemDirectionCol}")
             if (data.couldUpdate(current.number+1, nextRow, nextCol)) {
                 val updatedData = data.update(current.number+1, nextRow, nextCol)
                 val solution = PuzzleData(
