@@ -76,13 +76,20 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
     }
 }
 
-private fun <T> Array<Array<T>>.printAsMatrix() {
+private fun Array<Array<Cell>>.printAsMatrix() {
+
     forEachIndexed { i, row ->
-        println()
-        print("$i ")
-        row.forEachIndexed { j, cell ->
-            print(" $cell")
+        if (i == 0) {
+            println()
+            print("  |")
+            row.forEachIndexed { j, _ -> print(String.format("%4d", j))}
+            println()
+            print("--|")
+            row.forEachIndexed { j, _ -> print(String.format("----", j))}
         }
+        println()
+        print("$i |")
+        row.forEach { cell -> print(String.format("%4d", cell.number)) }
     }
 }
 
