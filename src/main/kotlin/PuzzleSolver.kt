@@ -1,8 +1,8 @@
-import javafx.beans.binding.NumberBinding
-import java.lang.RuntimeException
 import java.time.LocalDateTime
 import kotlin.math.abs
 import kotlin.math.sqrt
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
                       val knownNumbers: List<Int>,
@@ -125,6 +125,7 @@ private fun List<String>.parse(m: Int, n: Int) = Array(m) { row ->
     }
 }
 
+@ExperimentalTime
 fun main() {
     val inputArray = listOf(
         "1DR", "D", "D", "DR", "L", "L", "D", "DL",
@@ -173,10 +174,13 @@ fun main() {
 //        "R", "R", "L", "L", "25"
 //        )
     println(LocalDateTime.now().toString())
-    val side = sqrt(inputArray.size.toDouble()).toInt()
-    val solution = PuzzleSolver(inputArray, side, side).solve()
-    print(solution)
-    solution.data.printAsMatrix()
+    val executionTime = measureTime {
+        val side = sqrt(inputArray.size.toDouble()).toInt()
+        val solution = PuzzleSolver(inputArray, side, side).solve()
+        print(solution)
+        solution.data.printAsMatrix()
+    }
+
     println()
-    println(LocalDateTime.now().toString())
+    println(executionTime)
 }
