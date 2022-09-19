@@ -3,13 +3,15 @@ import kotlin.math.sqrt
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-data class PuzzleData(val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
-                      val presetNumbers: List<Int>,
-                      val isBroken: Boolean = false) {
+data class PuzzleData(
+    val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
+    val presetNumbers: List<Int>,
+    val isBroken: Boolean = false
+) {
     private val cell = data[currentRow][currentCol]
     val isSolved = cell.number >= data.size * data.size && !this.isBroken
 
-    fun fillNext():PuzzleData {
+    fun fillNext(): PuzzleData {
         if (isSolved) {
             return this
         }
@@ -59,19 +61,18 @@ data class PuzzleData(val currentRow: Int, val currentCol: Int, val data: Array<
         }
     }
 
-    companion object{
-        val Broken = PuzzleData(0,0, arrayOf(arrayOf(Cell(0,1,1))), listOf(), true)
+    companion object {
+        val Broken = PuzzleData(
+            0, 0,
+            arrayOf(arrayOf(Cell(0, 1, 1))),
+            listOf(),
+            true
+        )
     }
 }
 
-private fun Array<Array<Cell>>.couldUpdate(number: Int, row: Int, col: Int) = this[row][col].number == 0 || this[row][col].number == number
-
-class PuzzleSolver(inputArray: List<String>, m: Int, n: Int) {
-    private val inputData = inputArray.parse(m, n)
-    private val currentCell = inputData.first { it.any { it.number == 1 }}.first {it.number == 1}
-    private val presetNumbers = inputArray.findNumbers()
-    fun solve() = PuzzleData(0, 0, inputData, presetNumbers).fillNext()
-}
+private fun Array<Array<Cell>>.couldUpdate(number: Int, row: Int, col: Int) =
+    this[row][col].number == 0 || this[row][col].number == number
 
 data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
 
@@ -116,17 +117,23 @@ fun main() {
 //        "15", "14", "13", "16","17",
 //        "22", "24", "21", "23", "25",
 //    )
-        val inputArray = listOf(
+    val inputArray = listOf(
         "1R", "DR", "LD", "L", "D",
         "8D", "R", "UR", "7L", "U",
         "R", "R", "R", "LD", "DL",
         "15R", "L", "L", "R", "U",
         "R", "R", "L", "L", "25"
-        )
+    )
     println(LocalDateTime.now().toString())
     val executionTime = measureTime {
         val side = sqrt(inputArray.size.toDouble()).toInt()
-        val solution = PuzzleSolver(inputArray, side, side).solve()
+
+        val solution = PuzzleData(
+            0, 0,
+            inputArray.parse(side, side),
+            inputArray.findNumbers()
+        )
+            .fillNext()
         if (solution.isSolved) {
             print("Solved")
             solution.data.printAsMatrix()
