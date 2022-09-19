@@ -1,5 +1,4 @@
 import java.time.LocalDateTime
-import kotlin.math.abs
 import kotlin.math.sqrt
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -66,29 +65,6 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
     }
 }
 
-private fun Array<Array<Cell>>.printAsMatrix() {
-
-    forEachIndexed { i, row ->
-        if (i == 0) {
-            println()
-            print("  |")
-            row.forEachIndexed { j, _ -> print(String.format("%4d", j))}
-            println()
-            print("--|")
-            row.forEachIndexed { j, _ -> print(String.format("----", j))}
-        }
-        println()
-        print("$i |")
-        row.forEach { cell -> print(String.format("%4d", cell.number)) }
-    }
-}
-
-private fun Array<Array<Cell>>.update(number: Int, row: Int, col: Int): Array<Array<Cell>> {
-    val newData = this.map { it.map { it.copy() }.toTypedArray() }.toTypedArray()
-    newData[row][col] = newData[row][col].copy(number = number)
-    return newData
-}
-
 private fun Array<Array<Cell>>.couldUpdate(number: Int, row: Int, col: Int) = this[row][col].number == 0 || this[row][col].number == number
 
 class PuzzleSolver(inputArray: List<String>, m: Int, n: Int) {
@@ -98,32 +74,7 @@ class PuzzleSolver(inputArray: List<String>, m: Int, n: Int) {
     fun solve() = PuzzleData(currentCell, 0, 0, inputData, knownNumbers).fillNext()
 }
 
-private fun List<String>.findNumbers(): List<Int> = map {item -> item.filter { it.isDigit() }.toIntOrNull() ?: 0 }.filter { it > 0 }
-
 data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
-
-private fun List<String>.parse(m: Int, n: Int) = Array(m) { row ->
-    Array(n)
-    { col ->
-        val item = this[row * n + col]
-        Cell(
-            number = item.filter { it.isDigit() }.toIntOrNull() ?: 0,
-            nextItemDirectionCol = when {
-                item.contains("R") -> 1
-                item.contains("L") -> -1
-                else -> 0
-            },
-            nextItemDirectionRow = when {
-                item.contains("D") -> 1
-                item.contains("U") -> -1
-                else -> 0
-            }
-        ).apply { if (abs(nextItemDirectionCol) + abs(nextItemDirectionRow) == 0 && n * m != number) {
-                throw RuntimeException("$row, $col")
-            }
-        }
-    }
-}
 
 @ExperimentalTime
 fun main() {
