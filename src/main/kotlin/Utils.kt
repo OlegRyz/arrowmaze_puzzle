@@ -6,18 +6,18 @@ fun List<String>.parse(m: Int, n: Int) = Array(m) { row ->
         val item = this[row * n + col]
         Cell(
             number = item.filter { it.isDigit() }.toIntOrNull() ?: 0,
-            nextItemDirectionCol = when {
+            arrowDirectionCol = when {
                 item.contains("R") -> 1
                 item.contains("L") -> -1
                 else -> 0
             },
-            nextItemDirectionRow = when {
+            arrowDirectionRow = when {
                 item.contains("D") -> 1
                 item.contains("U") -> -1
                 else -> 0
             }
         ).apply {
-            if (abs(nextItemDirectionCol) + abs(nextItemDirectionRow) == 0 && n * m != number) {
+            if (abs(arrowDirectionCol) + abs(arrowDirectionRow) == 0 && n * m != number) {
                 throw RuntimeException("$row, $col")
             }
         }

@@ -23,9 +23,9 @@ data class PuzzleData(
             0
         }
 
-        var nextRow = row + cell.nextItemDirectionRow
-        var nextCol = col + cell.nextItemDirectionCol
-        while (nextRow in data.indices && nextCol in data.indices) {
+        var nextRow = row + cell.arrowDirectionRow
+        var nextCol = col + cell.arrowDirectionCol
+        while (nextRow in 0..data.size-1 && nextCol in 0..data.size-1) {
             if (data[nextRow][nextCol].number == numberToBeReplaced) {
                 val updatedData = data.update(nextNumber, nextRow, nextCol)
                 val solution = PuzzleData(nextRow, nextCol,
@@ -39,8 +39,8 @@ data class PuzzleData(
                 }
 
             }
-            nextRow += cell.nextItemDirectionRow
-            nextCol += cell.nextItemDirectionCol
+            nextRow += cell.arrowDirectionRow
+            nextCol += cell.arrowDirectionCol
         }
 
         return Broken
@@ -55,7 +55,7 @@ data class PuzzleData(
     }
 }
 
-data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
+data class Cell(val number: Int, val arrowDirectionCol: Int, val arrowDirectionRow: Int)
 
 @ExperimentalTime
 fun main() {
