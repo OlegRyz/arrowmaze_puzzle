@@ -129,8 +129,12 @@ fun main() {
     val executionTime = measureTime {
         val side = sqrt(inputArray.size.toDouble()).toInt()
         val solution = PuzzleSolver(inputArray, side, side).solve()
-        print(solution)
-        solution.data.printAsMatrix()
+        if (solution.isSolved) {
+            print("Solved")
+            solution.data.printAsMatrix()
+        } else {
+            print("Cannot solve")
+        }
     }
 
     println()
