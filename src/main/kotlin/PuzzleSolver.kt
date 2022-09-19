@@ -66,9 +66,11 @@ fun main() {
 
     val executionTime = measureTime {
 
+        val data = inputArray.parse(side, side)
+        data.printAsMatrix()
         val puzzle = PuzzleData(
             0, 0,
-            inputArray.parse(side, side),
+            data,
             inputArray.findPresetNumbers()
         )
 

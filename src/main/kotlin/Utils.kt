@@ -46,7 +46,13 @@ fun Array<Array<Cell>>.printAsMatrix() {
         }
         println()
         print("$i |")
-        row.forEach { cell -> print(String.format("%4d", cell.number)) }
+        row.forEach { cell ->
+            if (cell.number > 0) {
+                print(String.format("%4d", cell.number))
+            } else {
+                print("   *")
+            }
+        }
     }
     println()
 }
