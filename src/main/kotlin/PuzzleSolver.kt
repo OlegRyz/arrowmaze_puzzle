@@ -20,45 +20,31 @@ data class PuzzleData(
         var nextRow = currentRow + cell.nextItemDirectionRow
         var nextCol = currentCol + cell.nextItemDirectionCol
 
-        if (presetNumbers.contains(nextNumber)) {
-            while (nextRow in data.indices && nextCol in data.indices) {
-                if (data[nextRow][nextCol].number == nextNumber) {
-                    val solution = PuzzleData(
-                        nextRow,
-                        nextCol,
-                        data,
-                        presetNumbers
-                    ).fillNext()
-                    if (solution.isSolved) {
-                        return solution
-                    }
-
-                }
-                nextRow += cell.nextItemDirectionRow
-                nextCol += cell.nextItemDirectionCol
-            }
-
-            return Broken
+        val searchNumber = if (presetNumbers.contains(nextNumber)) {
+            nextNumber
         } else {
-
-            while (nextRow in data.indices && nextCol in data.indices) {
-                if (data.couldUpdate(nextNumber, nextRow, nextCol)) {
-                    val updatedData = data.update(nextNumber, nextRow, nextCol)
-                    val solution = PuzzleData(
-                        nextRow,
-                        nextCol,
-                        updatedData,
-                        presetNumbers
-                    ).fillNext()
-                    if (solution.isSolved) {
-                        return solution
-                    }
-                }
-                nextRow += cell.nextItemDirectionRow
-                nextCol += cell.nextItemDirectionCol
-            }
-            return Broken
+            0
         }
+        while (nextRow in data.indices && nextCol in data.indices) {
+            if (data[nextRow][nextCol].number == searchNumber) {
+                val updatedData = data.update(nextNumber, nextRow, nextCol)
+                val solution = PuzzleData(
+                    nextRow,
+                    nextCol,
+                    updatedData,
+                    presetNumbers
+                ).fillNext()
+
+                if (solution.isSolved) {
+                    return solution
+                }
+
+            }
+            nextRow += cell.nextItemDirectionRow
+            nextCol += cell.nextItemDirectionCol
+        }
+
+        return Broken
     }
 
     companion object {
@@ -70,9 +56,6 @@ data class PuzzleData(
         )
     }
 }
-
-private fun Array<Array<Cell>>.couldUpdate(number: Int, row: Int, col: Int) =
-    this[row][col].number == 0 || this[row][col].number == number
 
 data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
 
