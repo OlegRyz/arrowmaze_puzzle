@@ -11,20 +11,21 @@ data class PuzzleData(
     private val cell = data[currentRow][currentCol]
     val isSolved = cell.number >= data.size * data.size && !this.isBroken
 
-    fun fillNext(): PuzzleData {
+    fun solve(): PuzzleData {
         if (isSolved) {
             return this
         }
         val nextNumber = cell.number + 1
 
-        var nextRow = currentRow + cell.nextItemDirectionRow
-        var nextCol = currentCol + cell.nextItemDirectionCol
 
         val searchNumber = if (presetNumbers.contains(nextNumber)) {
             nextNumber
         } else {
             0
         }
+
+        var nextRow = currentRow + cell.nextItemDirectionRow
+        var nextCol = currentCol + cell.nextItemDirectionCol
         while (nextRow in data.indices && nextCol in data.indices) {
             if (data[nextRow][nextCol].number == searchNumber) {
                 val updatedData = data.update(nextNumber, nextRow, nextCol)
@@ -33,7 +34,8 @@ data class PuzzleData(
                     nextCol,
                     updatedData,
                     presetNumbers
-                ).fillNext()
+                )
+                    .solve()
 
                 if (solution.isSolved) {
                     return solution
@@ -116,7 +118,7 @@ fun main() {
             inputArray.parse(side, side),
             inputArray.findNumbers()
         )
-            .fillNext()
+            .solve()
         if (solution.isSolved) {
             print("Solved")
             solution.data.printAsMatrix()
