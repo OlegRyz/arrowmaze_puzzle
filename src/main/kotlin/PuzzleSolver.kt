@@ -4,17 +4,18 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
-                      val knownNumbers: List<Int>,
+                      val presetNumbers: List<Int>,
                       val isBroken: Boolean = false) {
 
     val isSolved = current.number >= data.size * data.size && !this.isBroken
+
     fun fillNext():PuzzleData {
         if (isSolved) return this
         var nextRow = currentRow + current.nextItemDirectionRow
         var nextCol = currentCol + current.nextItemDirectionCol
 
         var isFound = false
-        if (knownNumbers.contains(current.number+1)) {
+        if (presetNumbers.contains(current.number+1)) {
             while (!isFound && nextRow in data.indices && nextCol in data.indices) {
                 if (data[nextRow][nextCol].number == current.number + 1) {
                     val solution = PuzzleData(
@@ -22,7 +23,7 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
                         nextRow,
                         nextCol,
                         data,
-                        knownNumbers
+                        presetNumbers
                     ).fillNext()
                     isFound = true
                     if (solution.isSolved) {
@@ -48,7 +49,7 @@ data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: In
                     nextRow,
                     nextCol,
                     updatedData,
-                    knownNumbers
+                    presetNumbers
                 ).fillNext()
                 if (solution.isSolved) {
                     return solution
@@ -70,8 +71,8 @@ private fun Array<Array<Cell>>.couldUpdate(number: Int, row: Int, col: Int) = th
 class PuzzleSolver(inputArray: List<String>, m: Int, n: Int) {
     private val inputData = inputArray.parse(m, n)
     private val currentCell = inputData.first { it.any { it.number == 1 }}.first {it.number == 1}
-    private val knownNumbers = inputArray.findNumbers()
-    fun solve() = PuzzleData(currentCell, 0, 0, inputData, knownNumbers).fillNext()
+    private val presetNumbers = inputArray.findNumbers()
+    fun solve() = PuzzleData(currentCell, 0, 0, inputData, presetNumbers).fillNext()
 }
 
 data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
