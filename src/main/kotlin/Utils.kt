@@ -24,7 +24,7 @@ fun List<String>.parse(m: Int, n: Int) = Array(m) { row ->
     }
 }
 
-fun List<String>.findNumbers(): List<Int> =
+fun List<String>.findPresetNumbers(): List<Int> =
     map { item -> item.filter { it.isDigit() }.toIntOrNull() ?: 0 }.filter { it > 0 }
 
 fun Array<Array<Cell>>.update(number: Int, row: Int, col: Int): Array<Array<Cell>> {
