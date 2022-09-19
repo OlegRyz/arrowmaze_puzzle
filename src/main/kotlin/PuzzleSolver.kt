@@ -9,16 +9,15 @@ data class PuzzleData(
     val isBroken: Boolean = false
 ) {
     private val cell = data[currentRow][currentCol]
+    private val nextNumber = cell.number + 1
     val isSolved = cell.number >= data.size * data.size && !this.isBroken
 
     fun solve(): PuzzleData {
         if (isSolved) {
             return this
         }
-        val nextNumber = cell.number + 1
 
-
-        val searchNumber = if (presetNumbers.contains(nextNumber)) {
+        val numberToBeReplaced = if (presetNumbers.contains(nextNumber)) {
             nextNumber
         } else {
             0
@@ -27,7 +26,7 @@ data class PuzzleData(
         var nextRow = currentRow + cell.nextItemDirectionRow
         var nextCol = currentCol + cell.nextItemDirectionCol
         while (nextRow in data.indices && nextCol in data.indices) {
-            if (data[nextRow][nextCol].number == searchNumber) {
+            if (data[nextRow][nextCol].number == numberToBeReplaced) {
                 val updatedData = data.update(nextNumber, nextRow, nextCol)
                 val solution = PuzzleData(
                     nextRow,
