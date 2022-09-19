@@ -84,5 +84,5 @@ fun main() {
             print("Cannot solve")
         }
     }
-    println(executionTime)
+    println("$executionTime spent to solve it")
 }
