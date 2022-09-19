@@ -3,66 +3,64 @@ import kotlin.math.sqrt
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-data class PuzzleData(val current: Cell, val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
+data class PuzzleData(val currentRow: Int, val currentCol: Int, val data: Array<Array<Cell>>,
                       val presetNumbers: List<Int>,
                       val isBroken: Boolean = false) {
-
-    val isSolved = current.number >= data.size * data.size && !this.isBroken
+    private val cell = data[currentRow][currentCol]
+    val isSolved = cell.number >= data.size * data.size && !this.isBroken
 
     fun fillNext():PuzzleData {
-        if (isSolved) return this
-        var nextRow = currentRow + current.nextItemDirectionRow
-        var nextCol = currentCol + current.nextItemDirectionCol
+        if (isSolved) {
+            return this
+        }
+        val nextNumber = cell.number + 1
 
-        var isFound = false
-        if (presetNumbers.contains(current.number+1)) {
-            while (!isFound && nextRow in data.indices && nextCol in data.indices) {
-                if (data[nextRow][nextCol].number == current.number + 1) {
+        var nextRow = currentRow + cell.nextItemDirectionRow
+        var nextCol = currentCol + cell.nextItemDirectionCol
+
+        if (presetNumbers.contains(nextNumber)) {
+            while (nextRow in data.indices && nextCol in data.indices) {
+                if (data[nextRow][nextCol].number == nextNumber) {
                     val solution = PuzzleData(
-                        data[nextRow][nextCol],
                         nextRow,
                         nextCol,
                         data,
                         presetNumbers
                     ).fillNext()
-                    isFound = true
                     if (solution.isSolved) {
                         return solution
                     }
 
                 }
-                nextRow += current.nextItemDirectionRow
-                nextCol += current.nextItemDirectionCol
+                nextRow += cell.nextItemDirectionRow
+                nextCol += cell.nextItemDirectionCol
             }
 
-            if (!isFound) {
-                return Broken
-            }
-        }
-        nextRow = currentRow + current.nextItemDirectionRow
-        nextCol = currentCol + current.nextItemDirectionCol
-        while(nextRow in data.indices && nextCol in data.indices) {
-            if (data.couldUpdate(current.number+1, nextRow, nextCol)) {
-                val updatedData = data.update(current.number+1, nextRow, nextCol)
-                val solution = PuzzleData(
-                    updatedData[nextRow][nextCol],
-                    nextRow,
-                    nextCol,
-                    updatedData,
-                    presetNumbers
-                ).fillNext()
-                if (solution.isSolved) {
-                    return solution
+            return Broken
+        } else {
+
+            while (nextRow in data.indices && nextCol in data.indices) {
+                if (data.couldUpdate(nextNumber, nextRow, nextCol)) {
+                    val updatedData = data.update(nextNumber, nextRow, nextCol)
+                    val solution = PuzzleData(
+                        nextRow,
+                        nextCol,
+                        updatedData,
+                        presetNumbers
+                    ).fillNext()
+                    if (solution.isSolved) {
+                        return solution
+                    }
                 }
+                nextRow += cell.nextItemDirectionRow
+                nextCol += cell.nextItemDirectionCol
             }
-            nextRow += current.nextItemDirectionRow
-            nextCol += current.nextItemDirectionCol
+            return Broken
         }
-        return PuzzleData.Broken
     }
 
     companion object{
-        val Broken = PuzzleData(Cell(0,0,0), 0,0, emptyArray(), listOf(), true)
+        val Broken = PuzzleData(0,0, arrayOf(arrayOf(Cell(0,1,1))), listOf(), true)
     }
 }
 
@@ -72,23 +70,23 @@ class PuzzleSolver(inputArray: List<String>, m: Int, n: Int) {
     private val inputData = inputArray.parse(m, n)
     private val currentCell = inputData.first { it.any { it.number == 1 }}.first {it.number == 1}
     private val presetNumbers = inputArray.findNumbers()
-    fun solve() = PuzzleData(currentCell, 0, 0, inputData, presetNumbers).fillNext()
+    fun solve() = PuzzleData(0, 0, inputData, presetNumbers).fillNext()
 }
 
 data class Cell(val number: Int, val nextItemDirectionCol: Int, val nextItemDirectionRow: Int)
 
 @ExperimentalTime
 fun main() {
-    val inputArray = listOf(
-        "1DR", "D", "D", "DR", "L", "L", "D", "DL",
-        "UR", "D", "R", "17DR", "52D", "D", "D", "L",
-        "R", "43L", "U", "14DR", "DL", "UR", "10D", "45L",
-        "D", "R", "UR", "UL", "15UL", "28R", "D", "L",
-        "60R", "L", "26UL", "R", "DR", "L", "D", "61L",
-        "D", "R", "D", "54L", "DR", "R", "UL", "D",
-        "UR", "DR", "56R", "UR", "UL", "L", "U", "U",
-        "R", "UL", "U", "33L", "R", "U", "L", "64"
-    )
+//    val inputArray = listOf(
+//        "1DR", "D", "D", "DR", "L", "L", "D", "DL",
+//        "UR", "D", "R", "17DR", "52D", "D", "D", "L",
+//        "R", "43L", "U", "14DR", "DL", "UR", "10D", "45L",
+//        "D", "R", "UR", "UL", "15UL", "28R", "D", "L",
+//        "60R", "L", "26UL", "R", "DR", "L", "D", "61L",
+//        "D", "R", "D", "54L", "DR", "R", "UL", "D",
+//        "UR", "DR", "56R", "UR", "UL", "L", "U", "U",
+//        "R", "UL", "U", "33L", "R", "U", "L", "64"
+//    )
 //    val inputArray = listOf(
 //        "1R", "2R", "3LD",
 //        "7R", "6L", "8D",
@@ -118,13 +116,13 @@ fun main() {
 //        "15", "14", "13", "16","17",
 //        "22", "24", "21", "23", "25",
 //    )
-//        val inputArray = listOf(
-//        "1R", "DR", "LD", "L", "D",
-//        "8D", "R", "UR", "7L", "U",
-//        "R", "R", "R", "LD", "DL",
-//        "15R", "L", "L", "R", "U",
-//        "R", "R", "L", "L", "25"
-//        )
+        val inputArray = listOf(
+        "1R", "DR", "LD", "L", "D",
+        "8D", "R", "UR", "7L", "U",
+        "R", "R", "R", "LD", "DL",
+        "15R", "L", "L", "R", "U",
+        "R", "R", "L", "L", "25"
+        )
     println(LocalDateTime.now().toString())
     val executionTime = measureTime {
         val side = sqrt(inputArray.size.toDouble()).toInt()
